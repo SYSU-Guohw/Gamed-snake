@@ -1,0 +1,47 @@
+model: 'sbd'
+network: 'ro_34'
+task: 'snake'
+resume: true
+gpus: [0]
+multistage: False
+add_darnet: 0
+train_or_test: train
+random_num: 0
+
+# 差分卷积配置
+use_differential_convolution: true  # 启用差分卷积
+differential_convolution_type: 'dcim'  # 可选: 'dcim', 'energy_gradient'
+
+
+# origin network：model_dir: "E:\\PyCharm-ZRC\\PyCharm-Project\\DeepSnake_remove_c\\data\\model\\MultipleSeg_1206_deepsnake_woDCNv2"
+# two heads network：model_dir: "E:/PyCharm-ZRC/PyCharm-Project/DeepSnake_remove_c/data/model/test_darnet/"
+# two heads network for new data:
+
+#model_dir: "/mnt/date/zhangrch/EnergeSnake/data/model/history_info/"
+#model_dir: "/data/lyc/EnergeSnake/data/model/zrc_5_5/"
+model_dir: "/data/guo/gamed/data/model/history_info"
+model_initial_root: "/data/guo/gamed/data/model/initial_pth/dla34-ba72cf86.pth"
+
+train:
+    optim: 'adam'
+    lr: 1e-5
+    milestones: (80, 120)
+    gamma: 0.5
+    batch_size: 1
+    dataset: 'SbdTrain'
+    num_workers: 0
+    epoch: 3000
+    # data_path: '/data/lyc/EnergeSnake/multiple_segmentdata/230/'
+    data_path: '/data/guo/EnergeSnake/multiple_segmentdata/resized/'
+    #data_path: '/mnt/date/zhangrch/EnergeSnake/multiple_segmentdata/setA/resized/'
+    # data_num: 219 # ROAS
+    save_ep: 100
+test:
+    dataset: 'SbdMini'
+    batch_size: 1
+    img_path: '/data/guo/EnergeSnake/multiple_segmentdata/resized/'
+    #img_path: '/mnt/date/zhangrch/EnergeSnake/multiple_segmentdata/setA/resized/'
+
+heads: {'ct_hm':64, 'wh': 2}
+segm_or_bbox: 'segm'
+

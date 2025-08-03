@@ -1,0 +1,38 @@
+____________________________________________4.23_____________________________________________
+
+1. 网络结构位于 lib/network/snake/ct_snake.py 文件中：
+     增加能量图：lib/networks/snake/ct_snake.py  forwrd函数。
+
+2. 网络在训练时是可以监督和更新 DLA_Net 的，使用 ct 和 wh （方框中心位置和方框的宽和高）。
+
+3. DarNet 和 DeepSnake 均使用L1损失，这为模型嫁接提供了便利。
+
+4. 损失的定义和记录在 lib/train/trainers/snake.py 的 class NetworkWrapper(nn.Module)中定义；
+   正向传播、误差逆传播、评估等功能在 lib/train/trainers/trainer.py 的 class Trainer(object) 类中定义。
+   这两个文件要大改。
+
+____________________________________________4.25_____________________________________________
+
+1.现在看来如果拼接的话，可能要重写DarNet的损失函数。
+
+
+____________________________________________4.27_____________________________________________
+
+当前进度：网络结果已经拼好，计划使用能量图代替cnn_feature，已经可以进行训练。
+下一步工作：（1）重写darnet端的损失函数（目前darnet端还没有损失函数，参数更新依据另一端的损失最小化）
+          （2）初步打算进行两个端独立训练（保障能量图的质量）
+          （3）想办法可视化一下能量图（在darnet的代码里看看别人是怎么操作的）
+
+1.损失函数的定义在lib/utils/net_utils.py中，实例化在lib/train/trainers/snake.py的NetworkWrapper类中。
+2.训练策略的定义在lib/train/trainers/trainer.py。
+3.train_net(2)在运行时加入了配置文件参数，可以直接运行。
+
+
+对于一张多分割图，我们的程序中分多次读取mask，但是读取后即刻进行了数据合并。这样做的目的是mask的处理（将二值掩膜转化为多边形点）不易出错。（处理细节详见lib/datasets/voc/snake.py）
+实验表明，一个独立mask的轮廓转化为多边形后，大概有300多个点。（实验详见lib/utils/getedge.py）
+
+
+是否加差分卷积取决于是否调用lib/utils/snake/snake_gcn_utils.py 的get_gcn_feature_pro()。
+lib/networks/snake/evolve.py 的evolve_poly()会调用get_gcn_feature_pro()。
+
+
