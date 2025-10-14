@@ -1,5 +1,5 @@
 
-# DL实验课大作业说明
+# Gamed-snake model code
 > 本项目基于
 > [Deep Snake for Real-Time Instance Segmentation](https://arxiv.org/pdf/2001.01629.pdf)（CVPR 2020 oral），我们对其进行优化并引入医学图像分割领域。
 > 此文档旨在帮助大家快速实现代码。
