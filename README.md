@@ -1,100 +1,74 @@
+#  GAMED-Snake
 
-# Gamed-snake model code
-> 本项目基于
-> [Deep Snake for Real-Time Instance Segmentation](https://arxiv.org/pdf/2001.01629.pdf)（CVPR 2020 oral），我们对其进行优化并引入医学图像分割领域。
-> 此文档旨在帮助大家快速实现代码。
+This is the code repository for the paper:
+> **GAMED-Snake: Gradient-aware Adaptive Momentum Evolution Deep Snake Model for Multi-organ Segmentation**
+>
+> [Ruicheng Zhang](https://github.com/SYSUzrc), Haowei Guo, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/), Puxin Yan and [Shen Zhao](https://scholar.google.com.hk/citations?hl=zh-CN&user=U68XZOgAAAAJ&view_op=list_works&sortby=pubdate)\*
+>
+> \*Corresponding author
+>
+> <em><b>ICME 2025</b></em>
+> 
+> **[[arXiv]](https://arxiv.org/abs/2501.12844)** **[[Paper with Code]](https://paperswithcode.com/paper/gamed-snake-gradient-aware-adaptive-momentum)** **[[HF Paper]](https://huggingface.co/papers/2501.12844)**
 
-<div style="display: flex; justify-content: space-between;">
-  <img src="assets/show_image.jpg" alt="1" style="width: 45%; margin: 10px;">
-  <img src="assets/img.png" alt="GT" style="width: 45%; margin: 10px;">
-</div>
+<center class ='img'>
+<img title="(a) The workflow of GAMED-Snake consists of two stages: initialization of detection boxes and contour evolution. Taking the detection boxes as the initial contours, snake evolution process iteratively deforms them to match organ boundaries. (b) Semantic segmentation models based on pixel classification often struggle with complex multi-organ segmentation scenes, resulting in errors as illustrated in Fig. \ref{fig:image1}(b). In contrast, snake algorithms inherently avoid these issues, producing smooth and precise contours. (c) Improvement of GAMED-Snake over the SOTA approaches on MR\_AVBCE \cite{Zhao2023Attractive} and BTCV \cite{landman2015miccai} datasets." src="https://github.com/SYSUzrc/GAMED-Snake/blob/main/image1.png" width="100%">
+</center>
 
 
-## 安装
-> 预祝各位一切顺利！
-### 设置python环境
+## Citation
 
-安装Python （推荐3.7）
+If you use any content of this repo for your work, please cite the following our paper:
 ```
-conda create -n snake python=3.7
-conda activate snake
-```
-### 安装pytorch
-1. make sure that the pytorch cuda is consistent with the system cuda！
-2. 由于本项目中需要使用完整版 CUDA Toolkit 对 C++ 语言进行本地编译，需格外注意 pytorch 和 CUDA 版本。
-3. 推荐使用 pytorch 1.9.0 和 CUDA 11.1 （成功复现）。
-4. 如电脑中没有完整版 CUDA Toolkit，请到英伟达官网进行下载。
-
-官网下载：
-```
-pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
-```
-清华源下载：
-```
-pip --trusted-host pypi.tuna.tsinghua.edu.cn install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
-```
-### 安装Cython
-```
- # 如果装不上可以装稍微高一点的版本，反正我没装上
-pip install Cython==0.28.2 
+@article{zhang2025gamed,
+  title={GAMED-Snake: Gradient-aware Adaptive Momentum Evolution Deep Snake Model for Multi-organ Segmentation},
+  author={Zhang, Ruicheng and Guo, Haowei and Zhang, Zeyu and Yan, Puxin and Zhao, Shen},
+  journal={arXiv preprint arXiv:2501.12844},
+  year={2025}
+}
 ```
 
-### 安装其他依赖
-```
+## Introduction
+Multi-organ segmentation is a critical yet challenging task due to complex anatomical backgrounds, blurred boundaries, and diverse morphologies. This study introduces the Gradient-aware Adaptive Momentum Evolution Deep Snake (GAMED-Snake) model, which establishes a novel paradigm for contour-based segmentation by integrating gradient-based learning with adaptive momentum evolution mechanisms. The GAMED-Snake model incorporates three major innovations: First, the Distance Energy Map Prior (DEMP) generates a pixel-level force field that effectively attracts contour points towards the true boundaries, even in scenarios with complex backgrounds and blurred edges. Second, the Differential Convolution Inception Module (DCIM) precisely extracts comprehensive energy gradients, significantly enhancing segmentation accuracy. Third, the Adaptive Momentum Evolution Mechanism (AMEM) employs cross-attention to establish dynamic features across different iterations of evolution, enabling precise boundary alignment for diverse morphologies. Experimental results on four challenging multi-organ segmentation datasets demonstrate that GAMED-Snake improves the mDice metric by approximately 2\% compared to state-of-the-art methods. 
+
+![image](https://github.com/user-attachments/assets/c2a0de00-0ff2-4f6d-bc71-f50b699cd914)
+
+## Environment Setup
+You can set up your own conda virtual environment by running the commands below.
+
+```bash
+# create a clean conda environment from scratch
+conda create --name GAMEDSnake python=3.7
+conda activate GAMEDSnake
+
+# install pip
+conda install ipython
+conda install pip
+
+# install required packages
 pip install -r requirements.txt
-```
-
-### 安装 apex
-```
-cd
-git clone https:\\github.com\\NVIDIA\\apex.git
-cd apex
-git checkout 39e153a3159724432257a8fc118807b359f4d1c8
-$env:CUDA_HOME="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.1"        # 这里修改为你自己的 CUDA Toolkit 路径
-python setup.py install --cuda_ext --cpp_ext
-# 如果 git 不下来可以手动下载到当前目录并进行编译
-```
-
-### 编译 `lib/csrc`下的cuda扩展
-本项目经过修改仅需要编译一个 cuda 扩展文件：extreme_utils
-```
-$env:ROOT="C:\path\to\snake"
-cd $env:ROOT\lib\csrc
-$env:CUDA_HOME="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.1"
-cd ..\extreme_utils
-python setup.py build_ext --inplace
-# 注意将路径改为你的实际路径
-```
-当编译成功后，文件目录下将会产生一个 _ext 文件。
-
-![ext](assets/ext.png)
-
-> 恭喜你已完成安装全部步骤！
-
-## 训练
-### 导入数据路径
-
-本项目已将所有数据路径集中在配置文件 sbd_snake.yaml 和 config.py 中，请将路径修改为你的实际路径，设定训练参数，即可开始模型训练。
-### 启动训练
 
 ```
+
+## Training
+
+### Import Dataset Path
+All dataset paths for this project are set in the configuration files `sbd_snake.yaml` and `config.py`.  
+Please modify the paths to match your actual dataset paths, set the training parameters, and then start model training.
+
+### Start Training
+```bash
 python train_net.py --cfg_file configs/sbd_snake.yaml model sbd_snake
 ```
+## Evaluation
 
-## 测试
-### 导入数据路径
-本项目已将所有数据路径集中在配置文件 sbd_snake.yaml 和 config.py 中，请将路径修改为你的实际路径，即可进行模型测试。
-### 启动测试
-```
+### Import Dataset Path
+All dataset paths for this project are set in the configuration files`sbd_snake.yaml` and `config.py`.  
+Please modify the paths to match your actual dataset paths to start model testing.
+
+### Start testing
+```bash
+
 python test.py
-```
 
-## Demo
-### 导入数据路径
-本项目已将所有数据路径集中在配置文件 sbd_snake.yaml 和 config.py 中，请将路径修改为你的实际路径，即可运行可视化demo。
-### 启动demo
 ```
-python demo.py
-```
-<p style="background-color:DodgerBlue;">&#x2003;ZRC 2024.04.22</p>
-
