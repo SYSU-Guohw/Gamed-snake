@@ -3,10 +3,10 @@
 This is the code repository for the paper:
 > **GAMED-Snake: Gradient-aware Adaptive Momentum Evolution Deep Snake Model for Multi-organ Segmentation**
 >
-> [Ruicheng Zhang](https://github.com/SYSUzrc)\**, [Haowei Guo](https://sysu-guohw.github.io/publications/)\**, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/), Puxin Yan and [Shen Zhao](https://scholar.google.com.hk/citations?hl=zh-CN&user=U68XZOgAAAAJ&view_op=list_works&sortby=pubdate)\*
+> [Ruicheng Zhang](https://github.com/SYSUzrc)<sup>†</sup>, [Haowei Guo](https://sysu-guohw.github.io/publications/)<sup>†</sup>, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/), Puxin Yan and [Shen Zhao](https://scholar.google.com.hk/citations?hl=zh-CN&user=U68XZOgAAAAJ&view_op=list_works&sortby=pubdate)\*
 >
 > \*Corresponding author
-> \*Eaqual contribution
+> <sup>†</sup>Eaqual contribution
 >
 > <em><b>ICME 2025</b></em>
 > 
